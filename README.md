@@ -29,3 +29,9 @@ After that the scripts should work.
 # Generates a PDF containing mailing addresses for every open order, 1 per page.
 ./addresses/addresses
 ```
+
+## Credentials
+
+The first time you use any of these scripts, it will require you to authorize the app. On subsequent uses
+the app should be ok. Your current credentials are stored in the file `.etsy-utils` in your home directory.
+If you are ever having trouble with credentials, or need to change your credentials, delete that file.
