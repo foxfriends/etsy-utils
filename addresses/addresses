@@ -1,0 +1,48 @@
+#!/usr/bin/env node
+const fs = require('fs');
+const path = require('path');
+const PDF = require('pdfkit');
+const Etsy = require('../etsy');
+
+const cwd = path.dirname(process.argv[1]);
+(async () => {
+    try {
+        const etsy = await Etsy.authenticate();
+        const receipts = await etsy.getAll(`shops/__SELF__/receipts/open`);
+        if (receipts.length === 0) {
+            console.log('There are not currently any orders');
+            return;
+        }
+        const addresses = receipts.map((receipt) => receipt.formatted_address);
+        const now = new Date();
+
+        const year = now.getFullYear();
+        const month = now.getMonth() + 1;
+        const day = now.getDate();
+        const hour = now.getHours();
+        const minute = now.getMinutes();
+        const second = now.getSeconds();
+
+        const width = 7 * 72;
+        const height = 5 * 72;
+        const pdf = new PDF({
+            size: [width, height],
+            autoFirstPage: false,
+            margin: 0,
+        });
+        const outfile = path.join(cwd, `${year}-${month}-${day}-${hour}-${minute}-${second}-addresses.pdf`);
+
+        pdf.pipe(fs.createWriteStream(outfile));
+        pdf.font(path.join(path.dirname(cwd), 'Montserrat-Medium.ttf'));
+        for (const address of addresses) {
+            const options = { width, align: 'center' };
+            pdf.addPage();
+            pdf.fontSize(12);
+            const h = pdf.heightOfString(address, options);
+            pdf.text(address, 0, (height - h) / 2, options);
+        }
+        pdf.end();
+    } catch (error) {
+        console.error('Error', error);
+    }
+})();
