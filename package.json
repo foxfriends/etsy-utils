@@ -11,6 +11,6 @@
   "dependencies": {
     "node-fetch": "^3.2.10",
     "oauth": "^0.9.15",
-    "pdfkit": "^0.11.0"
+    "pdfkit": "^0.13.0"
   }
 }
